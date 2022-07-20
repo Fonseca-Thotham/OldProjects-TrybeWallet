@@ -1,26 +1,49 @@
-const URL = 'https://economia.awesomeapi.com.br/json/all';
-
 export const LOGIN = 'LOGIN';
-const login = (email) => ({ type: LOGIN, email });
+export const GET_CURRENCIES = 'GET_CURRENCIES';
+export const ADD_EXPENSE = 'ADD_EXPENSE';
+export const DELETE_EXPENSE = 'DELETE_EXPENSE';
+export const EDIT_EXPENSE = 'EDIT_EXPENSE';
 
-export default login;
+export const userLoginAction = (email) => (
+  {
+    type: LOGIN,
+    payload: email,
+  }
+);
 
-export const CURRENCY = 'CURRENCY';
-export const currency = (currencies) => ({ type: CURRENCY, currencies });
+const getCurrencies = (currencies) => ({
+  type: GET_CURRENCIES,
+  payload: currencies,
+});
 
-export const fetchCurrency = () => async (dispatch) => {
-  const response = await fetch(URL);
-  const json = await response.json();
-  delete json.USDT;
-  const keys = Object.keys(json);
-  dispatch(currency(keys));
+const addExpenseAction = (expense) => ({
+  type: ADD_EXPENSE,
+  payload: expense,
+});
+
+export const deleteExpenseAction = (id) => ({
+  type: DELETE_EXPENSE,
+  payload: id,
+});
+
+export const editExpenseAction = (expense) => ({
+  type: EDIT_EXPENSE,
+  payload: expense,
+});
+
+export const getCurrenciesThunk = () => async (dispatch) => {
+  const response = await fetch('https://economia.awesomeapi.com.br/json/all');
+  const currencies = await response.json();
+  const currenciesArr = Object.keys(currencies).filter((val) => val !== 'USDT');
+  dispatch(getCurrencies(currenciesArr));
 };
 
-export const HANDLE_EXPENSES = 'HANDLE_EXPENSES';
-export const expense = (expenses) => ({ type: HANDLE_EXPENSES, expenses });
-
-export const fetchExpense = (expenses) => async (dispatch) => {
-  const response = await fetch(URL);
-  const json = await response.json();
-  dispatch(expense({ ...expenses, exchangeRates: json }));
+export const addExpenseThunk = (expense) => async (dispatch) => {
+  const response = await fetch('https://economia.awesomeapi.com.br/json/all');
+  const currencies = await response.json();
+  const result = {
+    ...expense,
+    exchangeRates: currencies,
+  };
+  dispatch(addExpenseAction(result));
 };
